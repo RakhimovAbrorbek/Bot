@@ -220,8 +220,21 @@ def main() -> None:
     app.add_handler(MessageHandler(filters.Document.ALL, handle_document))
     app.add_error_handler(error_handler)
 
-    logger.info("Bot starting.")
-    app.run_polling(allowed_updates=Update.ALL_TYPES)
+    port = os.getenv("PORT")
+    webhook_base = os.getenv("WEBHOOK_URL") or os.getenv("RENDER_EXTERNAL_URL")
+
+    if port and webhook_base:
+        logger.info("Bot starting in webhook mode on port %s", port)
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=int(port),
+            url_path=BOT_TOKEN,
+            webhook_url=f"{webhook_base.rstrip('/')}/{BOT_TOKEN}",
+            allowed_updates=Update.ALL_TYPES,
+        )
+    else:
+        logger.info("Bot starting in polling mode.")
+        app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
 if __name__ == "__main__":
