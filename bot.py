@@ -5,7 +5,12 @@ import tempfile
 from io import BytesIO
 from pathlib import Path
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from PIL import Image
 from telegram import Update
 from telegram.constants import ParseMode
@@ -17,8 +22,6 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
-
-load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
